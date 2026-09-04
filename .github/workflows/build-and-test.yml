@@ -1,0 +1,33 @@
+name: Build and Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Ensure Gradle wrapper is executable
+        run: chmod +x gradlew
+        working-directory: project
+
+      - name: Build
+        run: ./gradlew build --no-daemon
+        working-directory: project
+
+      - name: Test
+        run: ./gradlew test --no-daemon
+        working-directory: project
+
