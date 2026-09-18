@@ -110,7 +110,9 @@ COURSE SNAPSHOTS — 77 branches, read-only. Never checked out.
 3. Only infra/docs PRs and chapter PRs target `main`. A lesson commit straight on `main` is a
    mistake.
 4. Never commit to or force-push a `*b` or `*e` branch — `upstream` stays the source of truth
-   for them. Local tooling config belongs on `main`.
+   for them. Local tooling config belongs on `main`. The one exception is restoring a snapshot to
+   `upstream`'s exact state, which is the property this rule exists to protect; check it for
+   unmerged work first, because that force-push destroys whatever it carried.
 5. `git fetch upstream` never auto-merges. Inspect, then cherry-pick deliberately.
 
 ## Repo structure
@@ -237,12 +239,7 @@ These are the rules that decide whether this works at all:
 
 ## Known loose ends
 
-- CI installs Java 17 while the toolchain is 21. Harmless — Gradle auto-provisions 21, verified
-  green — but tidier to align. Needs `gh auth refresh -h github.com -s workflow` to push a
-  workflow change.
-- `main`'s `.gitignore` is the pristine 4-line upstream version, so `.idea/` and `qodana.yaml`
-  show as untracked. Rules for them were committed onto `02_02b` instead — a course snapshot
-  branch, which rule 4 says to leave alone. Move them to `main` and reset that branch to
-  `upstream/02_02b`.
-- Qodana (`qodana.yaml`, `qodana_code_quality.yml`) is untracked and has never run in CI. Either
-  commit it properly or delete it.
+- `origin/02_01b` sits three commits ahead of `upstream/02_01b`. All three reached `main` through
+  PR #1, so restoring it — `git push --force origin upstream/02_01b:refs/heads/02_01b` — would
+  lose nothing. `02_02b` was restored the same way; the lesson work it carried was discarded
+  deliberately, to be redone from the video.
