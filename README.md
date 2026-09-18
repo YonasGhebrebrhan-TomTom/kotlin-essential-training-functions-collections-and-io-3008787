@@ -38,3 +38,10 @@ Check out my other courses on [LinkedIn Learning](https://www.linkedin.com/learn
 
 [lil-course-url]: https://www.linkedin.com/learning/kotlin-essential-training-functions-collections-and-i-o
 [lil-thumbnail-url]: https://cdn.lynda.com/course/3008787/3008787-1650999441940-16x9.jpg
+
+## Way of working
+
+See [`docs/way-of-working.md`](docs/way-of-working.md) for how this fork is organised:
+chapter branches off `main`, the course snapshots used read-only as starting code and
+answer keys, and one PR per chapter. It's written as a guide — fork the course and follow
+it yourself if the approach suits you.
