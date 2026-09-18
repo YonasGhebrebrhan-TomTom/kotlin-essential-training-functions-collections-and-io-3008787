@@ -44,5 +44,6 @@ and I/O*, used to learn Kotlin. Full strategy: [`docs/way-of-working.md`](docs/w
 cd project && ./gradlew build          # JDK toolchain 21, auto-provisioned via foojay
 ```
 
-Lessons run from the IntelliJ gutter (many `main()` functions, so `./gradlew run` has no
-single target).
+Lessons run from the IntelliJ gutter, or by naming one: `./gradlew run -Plesson=ch02.StringsKt`.
+There are many `main()` functions, so `application { mainClass }` reads the `lesson` property
+rather than naming a single entry point.

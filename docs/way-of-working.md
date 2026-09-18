@@ -41,21 +41,34 @@ git remote add upstream \
   https://github.com/LinkedInLearning/kotlin-essential-training-functions-collections-and-io-3008787.git
 git fetch upstream
 
-# 2. Make `main` build on a current JDK — the seed. Replace the deprecated `kotlinOptions` /
-#    `sourceCompatibility` / `options.release` trio in project/build.gradle.kts with a single
-#    `kotlin { jvmToolchain(21) }`, and add the foojay resolver to project/settings.gradle.kts
-#    so Gradle downloads that JDK when the machine lacks it.
+# 2. Make `main` build on a current JDK — the seed. Already done if you forked this repo;
+#    do it yourself if you forked the course directly. Replace the `kotlinOptions.jvmTarget` /
+#    `sourceCompatibility` / `targetCompatibility` trio in project/build.gradle.kts with a
+#    single `kotlin { jvmToolchain(21) }`, and add the foojay resolver to
+#    project/settings.gradle.kts so Gradle downloads that JDK when the machine lacks it.
 cd project && ./gradlew build
 
 # 3. Start the first chapter that has code of your own.
 git switch -c chapter/02 main
+
+# 4. Write the first lesson file yourself — the seed ships no Kotlin. Create
+#    project/src/main/kotlin/ch02/Booleans.kt with `package ch02` and a `fun main()`,
+#    then run it from the IntelliJ gutter or with:
+./gradlew run -Plesson=ch02.BooleansKt
 ```
 
-Keep `main` free of lesson code: it carries the seed and, later, each finished chapter.
+The first `./gradlew build` takes a few minutes and downloads a JDK (~200 MB): that's the foojay
+resolver fetching Temurin 21 because `jvmToolchain(21)` asked for a JDK the machine doesn't have.
+It isn't stuck. Later builds reuse it.
+
+Keep `main` free of lesson code: it carries the seed and, later, each finished chapter. The seed's
+`project/src/main/kotlin/` holds only a `.gitkeep` — git won't track an empty directory, and
+without it a fresh clone would have no source root to put `ch02/Booleans.kt` in.
 
 **Chapter 01 gets no branch.** Its four videos are install-and-first-program; the Gradle project
 doesn't exist until `01_04b`, and once the seed on `main` builds, `01_04e` is effectively already
-in it. So the 39 videos map to **7 chapter branches (02–08)**, not 8.
+in it. Watch `01_01`–`01_04` for the IntelliJ setup, write nothing, and start typing at
+`chapter/02`. So the 39 videos map to **7 chapter branches (02–08)**, not 8.
 
 To see how far along a fork is, read `git log --oneline main` and the merged chapter PRs — that's
 the record, so this document doesn't duplicate it.
@@ -134,7 +147,14 @@ One file per video, named after the **concept** rather than the video number, ea
 `fun main()` in a package matching its directory (`package ch02`). Every file compiles to its own
 JVM class (`ch02.NumericTypesKt`), so any number of `main()` functions coexist. Run whichever one
 you're working on from the green arrow in the IntelliJ gutter — every past lesson stays one click
-away.
+away — or name it from the terminal:
+
+```bash
+./gradlew run -Plesson=ch02.NumericTypesKt     # the class name, not the file name
+```
+
+There's no single entry point to default to, so the seed's `application { mainClass }` reads that
+`lesson` property (defaulting to `ch02.BooleansKt`) instead of naming one lesson for good.
 
 The rule is really one file per **concept**; for chapters 02–06 that happens to be one per video.
 Where a video continues the previous video's program instead of introducing something new — ch07
@@ -216,9 +236,6 @@ These are the rules that decide whether this works at all:
 
 ## Known loose ends
 
-- `./gradlew run` has no target once `Main.kt` leaves the seed. Run from the IDE gutter, or make
-  it selectable: `mainClass.set(providers.gradleProperty("lesson")…)` then
-  `./gradlew run -Plesson=ch02.BooleansKt`.
 - CI installs Java 17 while the toolchain is 21. Harmless — Gradle auto-provisions 21, verified
   green — but tidier to align. Needs `gh auth refresh -h github.com -s workflow` to push a
   workflow change.
