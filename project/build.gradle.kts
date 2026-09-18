@@ -24,5 +24,8 @@ tasks.test {
 }
 
 application {
-    mainClass.set("MainKt")
+    // Every lesson is its own file with its own main(), so there is no single entry point.
+    // Pick one:  ./gradlew run -Plesson=ch02.StringsKt
+    // The default names the course's first lesson file.
+    mainClass.set(providers.gradleProperty("lesson").orElse("ch02.BooleansKt"))
 }

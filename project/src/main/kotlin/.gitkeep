@@ -1,0 +1,9 @@
+# Keeps the Kotlin source root in the repository.
+#
+# Git does not track empty directories, and the seed branch deliberately carries no
+# lesson code — without this file a fresh clone would have no src/main/kotlin at all.
+# Lessons go in chNN/ packages beside it, on a chapter branch:
+#
+#     project/src/main/kotlin/ch02/Booleans.kt   package ch02   fun main()
+#
+# See docs/way-of-working.md.
