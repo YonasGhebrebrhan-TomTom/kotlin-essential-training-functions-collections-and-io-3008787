@@ -1,7 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "1.9.25"
     application
 }
 
@@ -16,20 +14,18 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
+kotlin {
+    // Single source of truth for the JDK, used by both local builds and CI.
+    jvmToolchain(21)
+}
+
 tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-
 application {
-    mainClass.set("MainKt")
+    // Every lesson is its own file with its own main(), so there is no single entry point.
+    // Pick one:  ./gradlew run -Plesson=ch02.StringsKt
+    // The default names the course's first lesson file.
+    mainClass.set(providers.gradleProperty("lesson").orElse("ch02.BooleansKt"))
 }
