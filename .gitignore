@@ -2,3 +2,7 @@
 node_modules
 .tmp
 npm-debug.log
+
+# local tooling (IntelliJ at the repo root, Claude Code MCP servers)
+.idea/
+.mcp.json
