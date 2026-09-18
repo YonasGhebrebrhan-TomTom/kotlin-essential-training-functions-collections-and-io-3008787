@@ -43,4 +43,5 @@ Check out my other courses on [LinkedIn Learning](https://www.linkedin.com/learn
 
 See [`docs/way-of-working.md`](docs/way-of-working.md) for how this fork is organised:
 chapter branches off `main`, the course snapshots used read-only as starting code and
-answer keys, and one PR per chapter.
+answer keys, and one PR per chapter. It's written as a guide — fork the course and follow
+it yourself if the approach suits you.

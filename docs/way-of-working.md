@@ -1,17 +1,23 @@
 # Way of working
 
-How I work through the LinkedIn Learning course *Kotlin Essential Training: Functions,
-Collections, and I/O* in this fork.
+How to work through the LinkedIn Learning course *Kotlin Essential Training: Functions,
+Collections, and I/O* in a fork: fix the build once, type every line of Kotlin yourself, and
+take one real review per chapter instead of a rubber stamp per video.
+
+Nothing here is specific to one learner. Fork the course, follow it as written, and adjust
+where your setup differs.
 
 ## Why this exists
 
-The course ships **39 videos across 78 snapshot branches** (`CH_MOVIEb` = code at the start
-of a video, `CH_MOVIEe` = at the end). Those branches are independent snapshots — `02_02b`
-does not descend from `02_01e` — so nothing carries forward by branching off the course.
+The course ships **39 videos across 77 snapshot branches** (`CH_MOVIEb` = code at the start of
+a video, `CH_MOVIEe` = at the end). 39 × 2 = 78, less `03_06b`, which doesn't exist;
+`git ls-remote upstream` reports 78 heads because upstream's own `main` is one of them. Those
+branches are independent snapshots — `02_02b` does not descend from `02_01e` — so nothing
+carries forward by branching off the course.
 
-They also don't build. Every pristine branch ships **Gradle 7.1**, which caps at JDK 16,
-on a machine with JDK 23. Checking out a course branch means fixing the build before
-writing a line of Kotlin, 39 times over.
+They also don't build. Every pristine branch ships **Gradle 7.1**, which caps at JDK 16, so on
+a current JDK (23 here) they fail before compiling anything. Checking out a course branch means
+fixing the build before writing a line of Kotlin, 39 times over.
 
 So: fix the build once, on `main`, and branch from there.
 
@@ -19,21 +25,50 @@ So: fix the build once, on `main`, and branch from there.
 
 | | Goal | What it needs |
 | --- | --- | --- |
-| **A** | Learn Kotlin — functions, collections, IO | a build that works, code I write myself, feedback, code that accumulates |
+| **A** | Learn Kotlin — functions, collections, IO | a build that works, code you write yourself, feedback, code that accumulates |
 | **B** | Practice a real PR/branching workflow | a handful of genuine reviews — **one PR per chapter, not per video** |
 
-Goal B is deliberately rationed. Seven real reviews teach more than thirty-nine rubber stamps,
-and ceremony competes with goal A.
+Ration goal B deliberately. Seven real reviews teach more than thirty-nine rubber stamps, and
+ceremony competes with goal A.
+
+## Set up
+
+```bash
+# 1. Fork the course repo on GitHub, clone your fork, and keep the course as `upstream`.
+git clone https://github.com/<you>/kotlin-essential-training-functions-collections-and-io-3008787.git
+cd kotlin-essential-training-functions-collections-and-io-3008787
+git remote add upstream \
+  https://github.com/LinkedInLearning/kotlin-essential-training-functions-collections-and-io-3008787.git
+git fetch upstream
+
+# 2. Make `main` build on a current JDK — the seed. Replace the deprecated `kotlinOptions` /
+#    `sourceCompatibility` / `options.release` trio in project/build.gradle.kts with a single
+#    `kotlin { jvmToolchain(21) }`, and add the foojay resolver to project/settings.gradle.kts
+#    so Gradle downloads that JDK when the machine lacks it.
+cd project && ./gradlew build
+
+# 3. Start the first chapter that has code of your own.
+git switch -c chapter/02 main
+```
+
+Keep `main` free of lesson code: it carries the seed and, later, each finished chapter.
+
+**Chapter 01 gets no branch.** Its four videos are install-and-first-program; the Gradle project
+doesn't exist until `01_04b`, and once the seed on `main` builds, `01_04e` is effectively already
+in it. So the 39 videos map to **7 chapter branches (02–08)**, not 8.
+
+To see how far along a fork is, read `git log --oneline main` and the merged chapter PRs — that's
+the record, so this document doesn't duplicate it.
 
 ## Branch model
 
 ```
-COURSE SNAPSHOTS — 78 branches, read-only. Never checked out.
+COURSE SNAPSHOTS — 77 branches, read-only. Never checked out.
 ┌───────────────────────────────────────────────────────────────────────────┐
 │   02_01b  02_01e     02_02b  02_02e     02_03b  02_03e     02_04b  02_04e │
 └──────┬───────┬──────────────────────────────────────────────────┬─────────┘
        │       │                                                  │
-       │       └──────────── git diff  (answer key) ───────────────┘
+       │       └──────────── git show   (answer key) ──────────────┘
        └──────────────────── git show  (starting code) ──────┐
                                                              ▼
                         02_01      02_02      02_03      02_04
@@ -52,18 +87,22 @@ COURSE SNAPSHOTS — 78 branches, read-only. Never checked out.
 | `main` | permanent | the working build (the *seed*) plus every chapter finished so far. Accumulates. |
 | `chapter/NN` | days | one per chapter, cut from `main`, one commit per video, PR'd back, then deleted |
 | `origin/*b` | upstream's | starting code — read with `git show`, never checked out |
-| `origin/*e` | upstream's | the instructor's end state — the answer key, via `git diff` |
+| `origin/*e` | upstream's | the instructor's end state — the answer key, also read with `git show` |
 
 **Rules**
 
-1. Never check out a course branch. Read files out of it (`git show`, `git diff`) so its broken
-   Gradle never lands in the working tree.
-2. `chapter/NN` is always cut from `main`, never from a course branch.
-3. Only infra/docs PRs and chapter PRs target `main`. A lesson commit on `main` is a mistake.
-4. Never force-push a `*b` or `*e` branch — `upstream` remains the source of truth for them.
+1. Never check out a course branch. Read files out of it (`git show`) so its broken Gradle never
+   lands in the working tree.
+2. Cut `chapter/NN` from `main`, never from a course branch.
+3. Only infra/docs PRs and chapter PRs target `main`. A lesson commit straight on `main` is a
+   mistake.
+4. Never commit to or force-push a `*b` or `*e` branch — `upstream` stays the source of truth
+   for them. Local tooling config belongs on `main`.
 5. `git fetch upstream` never auto-merges. Inspect, then cherry-pick deliberately.
 
 ## Repo structure
+
+The **target** layout, once the course is finished — not what a fresh fork looks like.
 
 ```
 ├── README.md                    upstream's, plus a pointer to this document
@@ -93,15 +132,24 @@ COURSE SNAPSHOTS — 78 branches, read-only. Never checked out.
 
 One file per video, named after the **concept** rather than the video number, each with its own
 `fun main()` in a package matching its directory (`package ch02`). Every file compiles to its own
-JVM class (`ch02.NumericTypesKt`), so any number of `main()` functions coexist. Run the one you're
-working on from the green arrow in the IntelliJ gutter — every past lesson stays one click away.
+JVM class (`ch02.NumericTypesKt`), so any number of `main()` functions coexist. Run whichever one
+you're working on from the green arrow in the IntelliJ gutter — every past lesson stays one click
+away.
+
+The rule is really one file per **concept**; for chapters 02–06 that happens to be one per video.
+Where a video continues the previous video's program instead of introducing something new — ch07
+grows one IO program across `07_01`–`07_05`, ch08 splits a `ViewModel` out into its own file and
+tests it — keep editing the same file and let the commit message record which video it was. Adding
+`FileIo2.kt` to preserve one-file-per-video would follow the letter and lose the point.
+
+Nothing overwrites a previous lesson. Past chapters stay runnable.
 
 ## The loops
 
 **Per video**, on the chapter branch:
 
 ```
-   watch video ──▶ write the code myself ──▶ git diff vs origin/0X_0Ye
+   watch video ──▶ write the code yourself ──▶ read origin/0X_0Ye
                             ▲                            │
                             └──── fix what differs ◀──────┘
                                                          │
@@ -111,17 +159,26 @@ working on from the green arrow in the IntelliJ gutter — every past lesson sta
 ```bash
 git show origin/03_01b:project/src/main/kotlin/Main.kt     # starting code, when needed
 #   ... write it ...
-git diff HEAD origin/03_01e -- project/src/                # answer key
+git show origin/03_01e:project/src/main/kotlin/Main.kt     # answer key — read it, don't diff it
 git commit -m "03_01: local functions and default arguments"
 ```
+
+**Read the answer key, don't diff it.** The instructor keeps the whole course in one
+`project/src/main/kotlin/Main.kt`, rewritten each video. Your code lives in
+`project/src/main/kotlin/ch03/Lambdas.kt`, under `package ch03`, with a named `main()`. So
+`git diff HEAD origin/03_01e -- project/src/` reports a delete of your file and an add of theirs:
+every line changed, nothing lined up, no signal. Read their file and compare the bodies — by eye,
+or in a split pane. `git diff` earns its keep only where the paths genuinely match, which in this
+course means chapter 08, where the instructor splits into `ViewModel.kt` / `AnalyticsClient.kt` /
+`ViewModelTest.kt` and your layout can match theirs.
 
 **Per chapter** — this is where goal B lives:
 
 ```bash
-git switch -c chapter/03 main      # start
+git switch -c chapter/03 main                              # start
 # ... videos ...
-git diff chapter/03 origin/03_06e -- project/src/          # compare against the chapter's end
-/code-review                                                # then self-review
+git show origin/03_06e:project/src/main/kotlin/Main.kt     # the chapter's end state
+/code-review                                               # then self-review
 gh pr create --base main --fill
 gh pr merge --squash --delete-branch
 ```
@@ -134,17 +191,19 @@ explicit is what stops a lesson PR landing on the wrong base.
 These are the rules that decide whether this works at all:
 
 1. **Claude does not write the exercise code.** Not a scaffold, not "just the boilerplate."
-   I type it. This is the entire point, and it's the easiest rule to erode.
-2. **Claude handles the plumbing** — Gradle, JDKs, CI, git. That's where the time was going before.
-3. **Claude reviews after I've written it**, against `origin/*e`, and explains *why* the
+   You type it. This is the entire point, and it's the easiest rule to erode.
+2. **Claude handles the plumbing** — Gradle, JDKs, CI, git. That's where the time goes otherwise.
+3. **Claude reviews after you've written it**, against `origin/*e`, and explains *why* the
    instructor's version differs. This is the feedback the video can't give.
-4. **Claude explains concepts on demand** while I'm in the file.
+4. **Claude explains concepts on demand** while you're in the file.
+
+`CLAUDE.md` states these as instructions a session has to follow.
 
 ## Course map
 
 | Chapter | Videos | Topic | Notes |
 | --- | --- | --- | --- |
-| 01 | 01_01–01_04 | setup, first program | no Gradle project until `01_04` |
+| 01 | 01_01–01_04 | setup, first program | no Gradle project until `01_04`; no chapter branch |
 | 02 | 02_01–02_04 | types, variables, null safety | |
 | 03 | 03_01–03_06 | functions, lambdas, function parameters | **`03_06` has no `b`** — start from `03_05e` |
 | 04 | 04_01–04_08 | `when` expressions, `is` / smart casts | |
@@ -157,12 +216,15 @@ These are the rules that decide whether this works at all:
 
 ## Known loose ends
 
-- `./gradlew run` has no target since `Main.kt` was removed from the seed. Run from the IDE
-  gutter, or make it selectable: `mainClass.set(providers.gradleProperty("lesson")…)` then
+- `./gradlew run` has no target once `Main.kt` leaves the seed. Run from the IDE gutter, or make
+  it selectable: `mainClass.set(providers.gradleProperty("lesson")…)` then
   `./gradlew run -Plesson=ch02.BooleansKt`.
 - CI installs Java 17 while the toolchain is 21. Harmless — Gradle auto-provisions 21, verified
-  green — but tidier to align. Needs `gh auth refresh -h github.com -s workflow` to push.
+  green — but tidier to align. Needs `gh auth refresh -h github.com -s workflow` to push a
+  workflow change.
 - `main`'s `.gitignore` is the pristine 4-line upstream version, so `.idea/` and `qodana.yaml`
-  show as untracked. The ignore rules for them exist only on `02_02b`.
-- Qodana (`qodana.yaml`, `qodana_code_quality.yml`) is untracked and has never run in CI.
-  Either commit it properly or delete it.
+  show as untracked. Rules for them were committed onto `02_02b` instead — a course snapshot
+  branch, which rule 4 says to leave alone. Move them to `main` and reset that branch to
+  `upstream/02_02b`.
+- Qodana (`qodana.yaml`, `qodana_code_quality.yml`) is untracked and has never run in CI. Either
+  commit it properly or delete it.
