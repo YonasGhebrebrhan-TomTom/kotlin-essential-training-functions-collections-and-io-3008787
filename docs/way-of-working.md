@@ -128,6 +128,7 @@ The **target** layout, once the course is finished — not what a fresh fork loo
     ├── scores.txt               ch07 input data  (sorted.txt is generated → ignored)
     └── src/
         ├── main/kotlin/
+        │   ├── .gitkeep         keeps the source root in git on a bare seed
         │   ├── ch02/            types & null safety
         │   │   ├── Booleans.kt          fun main()   ← 02_01
         │   │   ├── NumericTypes.kt      fun main()   ← 02_02

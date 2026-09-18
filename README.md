@@ -7,6 +7,12 @@ If you’re looking to get up and running with Kotlin, the powerful programming 
 
 Get a comprehensive overview of writing code in Kotlin, including the basics of data types, variables, statements, expressions, functions, and classes. Learn how to use the essential features of this powerful, interoperable language as well as effectively debug your code. Along the way, Nate gives you expert pointers on how to write safe and efficient multithreaded code using Kotlin coroutines to manage multiple tasks at the same time.
 
+> **This fork works differently from the instructions below.** It never checks out the course's
+> `CH_MOVIEb` / `CH_MOVIEe` branches — they ship Gradle 7.1, which can't build on a current JDK —
+> and reads them with `git show` instead. `main` here is a working build plus every finished
+> chapter, not the course's final state. Start at [`docs/way-of-working.md`](docs/way-of-working.md).
+> Everything below is LinkedIn Learning's original README, kept as shipped.
+
 ## Instructions
 This repository has branches for each of the videos in the course. You can use the branch pop up menu in github to switch to a specific branch and take a look at the course at that stage, or you can add `/tree/BRANCH_NAME` to the URL to go to the branch you want to access.
 

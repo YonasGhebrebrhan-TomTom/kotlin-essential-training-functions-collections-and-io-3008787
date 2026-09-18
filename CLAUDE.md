@@ -33,8 +33,11 @@ and I/O*, used to learn Kotlin. Full strategy: [`docs/way-of-working.md`](docs/w
 
 ## Code layout
 
-- One file per video: `project/src/main/kotlin/chNN/Concept.kt`, `package chNN`, its own
-  `fun main()`. Name files after the concept, not the video number.
+- One file per **concept**: `project/src/main/kotlin/chNN/Concept.kt`, `package chNN`, its own
+  `fun main()`. Name files after the concept, not the video number. For ch02–06 that works out
+  to one file per video; where a video continues the previous one's program instead (ch07's IO
+  program across `07_01`–`07_05`, ch08's `ViewModel`), keep editing the same file and let the
+  commit record the video.
 - Tests, where they exist: `project/src/test/kotlin/chNN/…Test.kt`.
 - Nothing overwrites a previous lesson. Past chapters stay runnable.
 
