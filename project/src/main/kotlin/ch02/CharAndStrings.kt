@@ -7,9 +7,10 @@ fun main () {
     val newLineChar = '\n'
     println("Character: $aChar, Number Character: $aNumberChar, New Line Character: $newLineChar")
 
+    val concatOption   = "World!"
     val concatOption1   = "Hello, " + "World!"
     val concatOption2   = "Hello, ".plus("World!")
-    val concatOption3   = "Hello, $concatOption1!"
+    val concatOption3   = "Hello, $concatOption"
     println("Concatenation: $concatOption1, $concatOption2, $concatOption3")
 
     val firstName = "John"
@@ -24,9 +25,9 @@ fun main () {
     println("Is Adult: $isAdult")
 
     val raw = """
-        This is a raw string.
-            |It can span multiple lines.
-        It preserves whitespace and formatting.
-    """.trimMargin()
+    This is a raw string.
+    It can span multiple lines.
+    It preserves whitespace and formatting.
+    """.trimIndent()
     println(raw)
 }
