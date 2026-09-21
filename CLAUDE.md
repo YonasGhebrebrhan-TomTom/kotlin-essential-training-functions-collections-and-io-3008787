@@ -1,35 +1,50 @@
 # CLAUDE.md
 
 A fork of the LinkedIn Learning course *Kotlin Essential Training: Functions, Collections,
-and I/O*, used to learn Kotlin. Full strategy: [`docs/way-of-working.md`](docs/way-of-working.md).
+and I/O*, used to learn Kotlin **and** to practise the git/PR/Claude workflow around it.
+Full strategy: [`docs/way-of-working.md`](docs/way-of-working.md).
 
 ## The rules
 
 1. **Do not write the exercise code.** Not a scaffold, not "just the boilerplate," not a
    corrected version pasted back. The learner types the Kotlin. If asked for a hint, give the
    smallest one that unblocks — a concept name, a signature, a doc pointer — never the body.
+   Expect to be asked for the solution at the moment handing it over would be most convenient;
+   point at `git show origin/0X_0Ye:…` instead, which is the course's own answer key.
 2. **Do handle the plumbing**: Gradle, JDK/toolchain, CI, git, branch and PR mechanics.
-3. **Review only after it's written**, against the instructor's end state — read it with
-   `git show origin/0X_0Ye:project/src/main/kotlin/Main.kt`, not `git diff` (the instructor
-   keeps one `Main.kt`; this fork uses `chNN/Concept.kt`, so a diff is all noise) — and explain
-   *why* the two differ.
-4. **Explain concepts on demand**, as much as asked.
+3. **Review after it's written, on the PR.** Post findings inline on the diff (`/code-review
+   <pr> --comment`). Compare against the instructor's end state by reading it with
+   `git show origin/0X_0Ye:project/src/main/kotlin/Main.kt`, not `git diff` (the instructor keeps
+   one `Main.kt`; this fork uses `chNN/Concept.kt`, so a diff is all noise) — and explain *why*
+   the two differ. Findings name the concept and show the wrong output; they never carry the fix.
+4. **Explain concepts on demand**, as much as asked. Mechanism questions are free. Inspecting the
+   learner's file before they've read their own program's output is not — that reading is the
+   skill being built.
 
 ## Branching
 
-- `main` — the working build (the seed) plus every finished chapter. Accumulates.
-- `chapter/NN` — one per chapter, cut from `main`, one commit per video, PR'd back, deleted.
+- `main` — the working build (the seed) plus every merged video. Accumulates.
+- `lesson/NN_MM` — one per **video**, cut from `main`, PR'd back, squashed, deleted. Hours, not
+  days. Never name a branch bare `02_04`: too close to the course's `02_04b` / `02_04e`.
 - `origin/*b` / `origin/*e` — the course's 77 snapshots. **Never check these out**; they ship
-  Gradle 7.1, which cannot build on JDK 23. Read them with `git show` / `git diff` only.
-- One PR per **chapter**, never per video. `gh pr create --base main`.
-- Only infra/docs PRs and chapter PRs target `main`.
-- Never force-push a `*b` or `*e` branch. `git fetch upstream` never auto-merges.
+  Gradle 7.1, which cannot build on JDK 23. Read them with `git show` only.
+- **One PR per video**, never per chapter — 35 across the course. `gh pr create --base main`.
+- Everything reaches `main` through a PR: lesson, infra, docs. No direct commits on `main`.
+- Review findings are fixed **forward**, as another commit on the branch, not amended away. The
+  squash flattens it; the PR keeps the record.
+- Never force-push a `*b` or `*e` branch, except to restore it to `upstream`'s exact state — and
+  check it for unmerged work first, because that push destroys whatever it carried.
+- `git fetch upstream` never auto-merges.
+- `origin` is an **SSH** remote. Pushes touching `.github/workflows/` are rejected over HTTPS
+  unless the token carries the `workflow` scope.
 
 ## Commits
 
-- Lesson: `02_03: strings and string templates` (chapter_video prefix, concept after).
+- Lesson: `02_03: characters and strings` (chapter_video prefix, concept after).
 - Infra: `chore(build): …`, `ci: …`, `docs: …`.
 - Never mix lesson content and infra in one commit.
+- Lesson commits carry no `Co-Authored-By: Claude` line — Claude writes none of that code.
+  Infra and docs commits, where Claude does write the content, do.
 
 ## Code layout
 
@@ -47,6 +62,9 @@ and I/O*, used to learn Kotlin. Full strategy: [`docs/way-of-working.md`](docs/w
 cd project && ./gradlew build          # JDK toolchain 21, auto-provisioned via foojay
 ```
 
-Lessons run from the IntelliJ gutter, or by naming one: `./gradlew run -Plesson=ch02.StringsKt`.
-There are many `main()` functions, so `application { mainClass }` reads the `lesson` property
-rather than naming a single entry point.
+Lessons run from the IntelliJ gutter, or by naming one:
+`./gradlew run -Plesson=ch02.CharAndStringsKt`. There are many `main()` functions, so
+`application { mainClass }` reads the `lesson` property rather than naming a single entry point.
+
+Zero compiler warnings before a lesson commit. A commit carrying warnings teaches the next
+reader that warnings are acceptable here.
